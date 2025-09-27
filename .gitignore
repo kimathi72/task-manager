@@ -1,0 +1,46 @@
+# =========================
+# OS / IDE files
+# =========================
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*.swp
+
+# IntelliJ / Eclipse / VSCode
+.idea/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.vscode/
+
+# =========================
+# Spring Boot / Maven (backend)
+# =========================
+taskmanager-backend/target/
+taskmanager-backend/.mvn/wrapper/maven-wrapper.jar
+taskmanager-backend/.mvn/wrapper/maven-wrapper.properties
+taskmanager-backend/.mvn/timing.properties
+
+# Local environment files
+taskmanager-backend/application-*.yml
+taskmanager-backend/application-*.properties
+
+# =========================
+# Angular / Node (frontend)
+# =========================
+client/node_modules/
+client/dist/
+client/.angular/cache/
+client/.env
+
+# =========================
+# Other
+# =========================
+*.class
+*.jar
+*.war
+*.ear

@@ -1,0 +1,31 @@
+# =========================
+# Normalize line endings
+# =========================
+* text=auto eol=lf
+
+# Shell scripts should always use LF
+*.sh text eol=lf
+
+# Windows batch files should keep CRLF
+*.cmd text eol=crlf
+*.bat text eol=crlf
+
+# =========================
+# Language-specific
+# =========================
+*.java text diff=java
+*.ts text diff=typescript
+*.html text diff=html
+*.css text diff=css
+*.scss text diff=css
+*.yml text
+*.yaml text
+*.properties text
+*.xml text
+
+# =========================
+# Keep lockfiles consistent
+# =========================
+pom.xml text
+package-lock.json text
+yarn.lock text
