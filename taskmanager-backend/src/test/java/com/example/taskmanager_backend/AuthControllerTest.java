@@ -29,7 +29,7 @@ public class AuthControllerTest {
         user.put("username", "roy");
         user.put("password", "password123");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
@@ -42,13 +42,13 @@ public class AuthControllerTest {
         user.put("username", "roy2");
         user.put("password", "password123");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
 
         // Then login with same credentials
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
@@ -61,7 +61,7 @@ public class AuthControllerTest {
         user.put("username", "roy3");
         user.put("password", "password123");
 
-        mockMvc.perform(post("/auth/register")
+        mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
@@ -71,7 +71,7 @@ public class AuthControllerTest {
         badLogin.put("username", "roy3");
         badLogin.put("password", "wrongpass");
 
-        mockMvc.perform(post("/auth/login")
+        mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(badLogin)))
                 .andExpect(status().isUnauthorized());

@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
 
     private final AuthService authService;
@@ -46,7 +46,7 @@ public class AuthController {
             String token = authService.login(username, password);
 
             Map<String, Object> response = new HashMap<>();
-            response.put("token", token);
+            response.put("jwt", token);
             response.put("username", username);
 
             return ResponseEntity.ok(response);
