@@ -3,8 +3,9 @@
 # =========================
 * text=auto eol=lf
 
-# Shell scripts should always use LF
+# Force line endings
 *.sh text eol=lf
+*.cmd text eol=crlf
 
 # Windows batch files should keep CRLF
 *.cmd text eol=crlf
