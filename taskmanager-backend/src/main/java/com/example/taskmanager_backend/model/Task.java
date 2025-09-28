@@ -7,33 +7,32 @@ import jakarta.persistence.*;
 @Table(name = "tasks")
 public class Task {
 
+    public enum Status {
+        PENDING, COMPLETED
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
 
+    @Column
     private String description;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Status status = Status.PENDING;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore   // Prevents infinite recursion and proxy serialization issues
+    @JsonIgnore
     private User user;
 
-    // --- Constructors ---
-    public Task() {
-    }
+    public Task() {}
 
-    public Task(String title, String description, String status, User user) {
-        this.title = title;
-        this.description = description;
-        this.status = status;
-        this.user = user;
-    }
-
-    // --- Getters and Setters ---
+    // Getters & Setters
     public Long getId() {
         return id;
     }
@@ -58,11 +57,11 @@ public class Task {
         this.description = description;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

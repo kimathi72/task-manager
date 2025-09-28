@@ -6,6 +6,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.function.Function;
@@ -13,17 +14,18 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
-    // Use a strong random secret, not a raw string
-    private final Key secretKey = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    // Fixed secret key (must be long enough for HS256)
+    private static final String SECRET_STRING = "MySuperSecretKeyForJwtSigningThatIsLongEnough123!";
+    private static final Key SECRET_KEY = Keys.hmacShaKeyFor(SECRET_STRING.getBytes(StandardCharsets.UTF_8));
 
-    private final long expirationMs = 1000 * 60 * 60; // 1 hour
+    private static final long EXPIRATION_MS = 1000 * 60 * 60; // 1 hour
 
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
-                .signWith(secretKey)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_MS))
+                .signWith(SECRET_KEY)
                 .compact();
     }
 
@@ -33,7 +35,7 @@ public class JwtUtil {
 
     public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
         final Claims claims = Jwts.parserBuilder()
-                .setSigningKey(secretKey)
+                .setSigningKey(SECRET_KEY)
                 .build()
                 .parseClaimsJws(token)
                 .getBody();

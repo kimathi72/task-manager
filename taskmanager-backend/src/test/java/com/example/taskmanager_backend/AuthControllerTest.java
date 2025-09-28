@@ -37,7 +37,6 @@ public class AuthControllerTest {
 
     @Test
     void testLoginUser() throws Exception {
-        // Ensure user is registered first
         Map<String, String> user = new HashMap<>();
         user.put("username", "roy2");
         user.put("password", "password123");
@@ -47,7 +46,6 @@ public class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
 
-        // Then login with same credentials
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(user)))
@@ -56,7 +54,6 @@ public class AuthControllerTest {
 
     @Test
     void testLoginFailsWithWrongPassword() throws Exception {
-        // Register user
         Map<String, String> user = new HashMap<>();
         user.put("username", "roy3");
         user.put("password", "password123");
@@ -66,7 +63,6 @@ public class AuthControllerTest {
                         .content(objectMapper.writeValueAsString(user)))
                 .andExpect(status().isOk());
 
-        // Try wrong password
         Map<String, String> badLogin = new HashMap<>();
         badLogin.put("username", "roy3");
         badLogin.put("password", "wrongpass");

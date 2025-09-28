@@ -1,12 +1,17 @@
 package com.example.taskmanager_backend;
 
 import com.example.taskmanager_backend.model.Task;
+import com.example.taskmanager_backend.model.User;
+import com.example.taskmanager_backend.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -22,54 +27,58 @@ public class AuthIntegrationTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
+
+    @BeforeEach
+    void setup() {
+        // Ensure testuser exists with hashed password
+        if (userRepository.findByUsername("testuser").isEmpty()) {
+            User user = new User();
+            user.setUsername("testuser");
+            user.setPassword(passwordEncoder.encode("password"));
+            userRepository.save(user);
+        }
+    }
+
     @Test
+    @WithMockUser(username = "testuser")
     void testTaskCrudFlow() throws Exception {
-        // 1. Register user
-        mockMvc.perform(post("/api/auth/register")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"testuser\",\"password\":\"password\"}"))
-            .andExpect(status().isOk());
 
-        // 2. Login to get JWT
-        String loginResponse = mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"username\":\"testuser\",\"password\":\"password\"}"))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+        // Create task
+        String taskJson = "{\"title\":\"My first task\",\"description\":\"This is a test task\",\"status\":\"PENDING\"}";
+        String taskResponse = mockMvc.perform(post("/api/tasks")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(taskJson))
+                .andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
 
-        String jwt = objectMapper.readTree(loginResponse).get("jwt").asText();
+        Task createdTask = objectMapper.readValue(taskResponse, Task.class);
 
-        // 3. Create task
-        String response = mockMvc.perform(post("/api/tasks")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\":\"My first task\"}")
-                .header("Authorization", "Bearer " + jwt))
-            .andExpect(status().isOk())
-            .andReturn()
-            .getResponse()
-            .getContentAsString();
+        // Get task by ID
+        mockMvc.perform(get("/api/tasks/" + createdTask.getId()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("My first task"))
+                .andExpect(jsonPath("$.description").value("This is a test task"))
+                .andExpect(jsonPath("$.status").value("PENDING"));
 
-        Task createdTask = objectMapper.readValue(response, Task.class);
-
-        // 4. Get task by ID
-        mockMvc.perform(get("/api/tasks/" + createdTask.getId())
-                .header("Authorization", "Bearer " + jwt))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.title").value("My first task"));
-
-        // 5. Update task
+        // Update task
+        String updatedTaskJson = "{\"title\":\"Updated task\",\"description\":\"Updated description\",\"status\":\"COMPLETED\"}";
         mockMvc.perform(put("/api/tasks/" + createdTask.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"title\":\"Updated task\"}")
-                .header("Authorization", "Bearer " + jwt))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.title").value("Updated task"));
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(updatedTaskJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.title").value("Updated task"))
+                .andExpect(jsonPath("$.description").value("Updated description"))
+                .andExpect(jsonPath("$.status").value("COMPLETED"));
 
-        // 6. Delete task
-        mockMvc.perform(delete("/api/tasks/" + createdTask.getId())
-                .header("Authorization", "Bearer " + jwt))
-            .andExpect(status().isNoContent());
+        // Delete task
+        mockMvc.perform(delete("/api/tasks/" + createdTask.getId()))
+                .andExpect(status().isNoContent());
     }
 }
