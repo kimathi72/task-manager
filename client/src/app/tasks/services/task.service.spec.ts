@@ -1,7 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TaskService } from '../services/task.service';
-import { Task } from '../../models/task-model';
+import { Task } from '../../models/task.model';
 
 describe('TaskService', () => {
   let service: TaskService;

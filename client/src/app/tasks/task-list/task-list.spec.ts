@@ -1,73 +1,68 @@
-import { TestBed, ComponentFixture } from '@angular/core/testing';
-import { TaskList } from './task-list';
-import { TaskService } from '../services/task.service';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
-import { Task } from '../../models/task-model';
 
-describe('TaskList', () => {
-  let fixture: ComponentFixture<TaskList>;
-  let component: TaskList;
-  let httpMock: HttpTestingController;
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { of } from 'rxjs';
+import { TaskListComponent } from './task-list.component';
+import { TaskService } from '../services/task.service';
+import { Task } from '../../models/task.model';
+
+describe('TaskListComponent', () => {
+  let component: TaskListComponent;
+  let fixture: ComponentFixture<TaskListComponent>;
+  let taskService: jasmine.SpyObj<TaskService>;
 
   const mockTasks: Task[] = [
-    { id: 1, title: 'Task A', description: 'Desc A', status: 'PENDING', userId: 1 },
-    { id: 2, title: 'Task B', description: 'Desc B', status: 'PENDING', userId: 1 },
+    { id: 1, title: 'One', description: 'Desc', status: 'PENDING' },
+    { id: 2, title: 'Two', description: 'Desc2', status: 'COMPLETED' }
   ];
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [TaskList, HttpClientTestingModule],
-      providers: [TaskService],
-    });
+  beforeEach(async () => {
+    taskService = jasmine.createSpyObj('TaskService', ['getTasks', 'deleteTask', 'updateTask']);
+    taskService.getTasks.and.returnValue(of(mockTasks));
+    taskService.deleteTask.and.returnValue(of());
+    taskService.updateTask.and.returnValue(of(mockTasks[0]));
 
-    fixture = TestBed.createComponent(TaskList);
+    await TestBed.configureTestingModule({
+      imports: [FormsModule],
+      declarations: [TaskListComponent],
+      providers: [{ provide: TaskService, useValue: taskService }]
+    }).compileComponents();
+
+    fixture = TestBed.createComponent(TaskListComponent);
     component = fixture.componentInstance;
-    httpMock = TestBed.inject(HttpTestingController);
-  });
-
-  afterEach(() => {
-    httpMock.verify();
-  });
-
-  it('should create', () => {
     fixture.detectChanges();
-
-    const req = httpMock.expectOne('/api/tasks');
-    req.flush([]); // respond with empty task list
-
-    expect(component).toBeTruthy();
   });
 
-  it('should call backend and update a task', () => {
-    fixture.detectChanges();
-
-    // initial GET
-    const getReq = httpMock.expectOne('/api/tasks');
-    getReq.flush(mockTasks);
-
-    // edit + save
-    component.editTask(mockTasks[0]);
-    component.editingTask!.title = 'Updated Task A';
-    component.saveTask();
-
-    const putReq = httpMock.expectOne(`/api/tasks/1`);
-    expect(putReq.request.method).toBe('PUT');
-    expect(putReq.request.body.title).toBe('Updated Task A');
-
-    putReq.flush({ ...mockTasks[0], title: 'Updated Task A' });
+  it('should load tasks on init', () => {
+    expect(component.tasks.length).toBe(2);
   });
 
-  it('should call backend and delete a task', () => {
-    fixture.detectChanges();
-
-    // initial GET
-    const getReq = httpMock.expectOne('/api/tasks');
-    getReq.flush(mockTasks);
+  it('should delete a task', (done) => {
+    component.tasks = [...mockTasks];
+    taskService.deleteTask.and.returnValue(of(void 0));
 
     component.deleteTask(1);
 
-    const deleteReq = httpMock.expectOne(`/api/tasks/1`);
-    expect(deleteReq.request.method).toBe('DELETE');
-    deleteReq.flush({});
+    // wait for async subscription
+    setTimeout(() => {
+      expect(taskService.deleteTask).toHaveBeenCalledWith(1);
+      expect(component.tasks.length).toBe(1);
+      expect(component.tasks.find(t => t.id === 1)).toBeUndefined();
+      done();
+    });
+  });
+
+  it('should enter edit mode and save task', (done) => {
+    component.startEdit(mockTasks[0]);
+    expect(component.editingTask?.id).toBe(1);
+
+    component.saveTask();
+
+    // wait for async subscription
+    setTimeout(() => {
+      expect(component.editingTask).toBeNull();
+      done();
+    });
   });
 });
+

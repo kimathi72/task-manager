@@ -1,41 +1,45 @@
-// src/app/core/interceptors/jwt-interceptor.spec.ts
-import { HttpRequest, HttpHandlerFn } from '@angular/common/http';
-import { jwtInterceptor } from './jwt-interceptor';
+import { TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { HTTP_INTERCEPTORS, HttpClient } from '@angular/common/http';
+import { JwtInterceptor } from './jwt-interceptor';
 import { AuthService } from '../../auth/services/auth.service';
 
-describe('jwtInterceptor (functional)', () => {
+describe('JwtInterceptor', () => {
+  let http: HttpClient;
+  let httpMock: HttpTestingController;
   let mockAuth: jasmine.SpyObj<AuthService>;
 
   beforeEach(() => {
-    mockAuth = jasmine.createSpyObj<AuthService>('AuthService', ['getToken']);
+    mockAuth = jasmine.createSpyObj('AuthService', ['getToken']);
+    TestBed.configureTestingModule({
+      imports: [HttpClientTestingModule],
+      providers: [
+        { provide: AuthService, useValue: mockAuth },
+        { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+      ],
+    });
+
+    http = TestBed.inject(HttpClient);
+    httpMock = TestBed.inject(HttpTestingController);
   });
 
-  it('should add Authorization header with Bearer token', (done) => {
+  afterEach(() => httpMock.verify());
+
+  it('should add Authorization header with Bearer token', () => {
     mockAuth.getToken.and.returnValue('test-token');
 
-    const req = new HttpRequest('GET', '/test');
-    const next: HttpHandlerFn = (r) => {
-      // ✅ expect the interceptor to add the header
-      expect(r.headers.get('Authorization')).toBe('Bearer test-token');
-      done();
-      return {} as any;
-    };
+    http.get('/test').subscribe();
 
-    // Call the interceptor function with mock service injected
-    (jwtInterceptor as any)(req, next, mockAuth);
+    const req = httpMock.expectOne('/test');
+    expect(req.request.headers.get('Authorization')).toBe('Bearer test-token');
   });
 
-  it('should not add Authorization header if no token', (done) => {
+  it('should not add Authorization header if no token', () => {
     mockAuth.getToken.and.returnValue(null);
 
-    const req = new HttpRequest('GET', '/test');
-    const next: HttpHandlerFn = (r) => {
-      // ✅ no Authorization header expected
-      expect(r.headers.has('Authorization')).toBeFalse();
-      done();
-      return {} as any;
-    };
+    http.get('/test').subscribe();
 
-    (jwtInterceptor as any)(req, next, mockAuth);
+    const req = httpMock.expectOne('/test');
+    expect(req.request.headers.has('Authorization')).toBeFalse();
   });
 });

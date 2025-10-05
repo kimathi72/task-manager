@@ -1,10 +1,10 @@
+import { Observable } from 'rxjs';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { of } from 'rxjs';
-import { RegisterComponent } from './register';
-import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { of } from 'rxjs';
+import { RegisterComponent } from './register.component';
+import { AuthService } from '../services/auth.service';
 
 describe('RegisterComponent', () => {
   let component: RegisterComponent;
@@ -17,12 +17,12 @@ describe('RegisterComponent', () => {
     router = jasmine.createSpyObj('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
-      imports: [RegisterComponent, ReactiveFormsModule], // standalone component goes in imports
+      declarations: [RegisterComponent],
+      imports: [ReactiveFormsModule],
       providers: [
         { provide: AuthService, useValue: authService },
-        { provide: Router, useValue: router },
-      ],
-      schemas: [NO_ERRORS_SCHEMA],
+        { provide: Router, useValue: router }
+      ]
     }).compileComponents();
 
     fixture = TestBed.createComponent(RegisterComponent);
@@ -38,12 +38,82 @@ describe('RegisterComponent', () => {
     expect(component.registerForm.valid).toBeFalse();
   });
 
-  it('should call AuthService.register on submit', () => {
-    component.registerForm.setValue({ username: 'user', password: 'pass123', confirmPassword: 'pass123' });
+  it('should mark form invalid when passwords do not match', () => {
+    component.registerForm.setValue({ 
+      username: 'user', 
+      password: 'pass123', 
+      confirmPassword: 'different' 
+    });
+    expect(component.registerForm.valid).toBeFalse();
+    expect(component.registerForm.errors?.['mismatch']).toBeTruthy();
+  });
+
+  it('should mark form valid when all fields are correct', () => {
+    component.registerForm.setValue({ 
+      username: 'user', 
+      password: 'pass123', 
+      confirmPassword: 'pass123' 
+    });
+    expect(component.registerForm.valid).toBeTrue();
+  });
+
+  it('should call AuthService.register on submit with valid form', () => {
+    component.registerForm.setValue({ 
+      username: 'testuser', 
+      password: 'pass123', 
+      confirmPassword: 'pass123' 
+    });
     authService.register.and.returnValue(of({ jwt: 'fake-jwt' }));
 
     component.onSubmit();
 
-    expect(authService.register).toHaveBeenCalledWith('user', 'pass123');
+    expect(authService.register).toHaveBeenCalledWith('testuser', 'pass123');
+    expect(component.loading).toBeFalse();
+    expect(component.successMessage).toBe('Registration successful! Redirecting...');
+  });
+
+  it('should not call AuthService.register when form is invalid', () => {
+    component.registerForm.setValue({ 
+      username: '', 
+      password: '', 
+      confirmPassword: '' 
+    });
+
+    component.onSubmit();
+
+    expect(authService.register).not.toHaveBeenCalled();
+  });
+
+  it('should navigate to login after successful registration', (done) => {
+    component.registerForm.setValue({ 
+      username: 'testuser', 
+      password: 'pass123', 
+      confirmPassword: 'pass123' 
+    });
+    authService.register.and.returnValue(of({ jwt: 'fake-jwt' }));
+
+    component.onSubmit();
+
+    setTimeout(() => {
+      expect(router.navigate).toHaveBeenCalledWith(['/login']);
+      done();
+    }, 1600);
+  });
+
+  it('should display error message on registration failure', () => {
+    component.registerForm.setValue({ 
+      username: 'testuser', 
+      password: 'pass123', 
+      confirmPassword: 'pass123' 
+    });
+    const errorResponse = { error: { message: 'Username already exists' } };
+    authService.register.and.returnValue(
+      new Observable(observer => observer.error(errorResponse))
+    );
+
+    component.onSubmit();
+
+    expect(component.loading).toBeFalse();
+    expect(component.errorMessage).toBe('Username already exists');
   });
 });

@@ -3,8 +3,9 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
+    "start": "ng serve --proxy-config proxy.conf.json",
+    "build": "ng build --configuration production",
+    "copy-to-backend": "rsync -a dist/client/ ../taskmanager-backend/src/main/resources/static/",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },
@@ -28,6 +29,7 @@
     "@angular/forms": "^20.3.2",
     "@angular/material": "^20.2.5",
     "@angular/platform-browser": "^20.3.0",
+    "@angular/platform-browser-dynamic": "^20.3.2",
     "@angular/router": "^20.3.2",
     "jwt-decode": "^4.0.0",
     "rxjs": "~7.8.0",
@@ -36,7 +38,6 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^20.3.3",
-    "@angular/build": "^20.3.3",
     "@angular/cli": "^20.3.3",
     "@angular/compiler-cli": "^20.3.2",
     "@types/jasmine": "~5.1.0",

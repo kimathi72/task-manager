@@ -33,6 +33,6 @@ describe('AuthGuard', () => {
   it('should redirect unauthenticated user to login', () => {
     authServiceSpy.isAuthenticated.and.returnValue(false);
     expect(guard.canActivate()).toBeFalse();
-    expect(routerSpy.navigate).toHaveBeenCalledWith(['/auth/login']);
+    expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
   });
 });

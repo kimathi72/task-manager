@@ -1,78 +1,65 @@
 package com.example.taskmanager_backend.controller;
 
 import com.example.taskmanager_backend.model.Task;
-import com.example.taskmanager_backend.model.User;
 import com.example.taskmanager_backend.service.TaskService;
-import com.example.taskmanager_backend.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/tasks")
 public class TaskController {
 
     private final TaskService taskService;
-    private final UserService userService;
 
-    public TaskController(TaskService taskService, UserService userService) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
-        this.userService = userService;
     }
 
     @PostMapping
-    public ResponseEntity<Task> createTask(@RequestBody Task task, Authentication authentication) {
-        String username = authentication.getName();
-        User user = userService.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        task.setUser(user);
-        Task createdTask = taskService.createTask(task);
-        return ResponseEntity.ok(createdTask);
+    public ResponseEntity<Task> createTask(@RequestBody Task task, Authentication auth) {
+        Task createdTask = taskService.createTask(task, auth.getName());
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdTask);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable Long id, Authentication authentication) {
-        String username = authentication.getName();
-        Task task = taskService.getTaskById(id);
-
-        if (!task.getUser().getUsername().equals(username)) {
-            return ResponseEntity.status(403).build();
+    public ResponseEntity<Task> getTask(@PathVariable Long id, Authentication auth) {
+        try {
+            Task task = taskService.getTaskByIdAndUsername(id, auth.getName());
+            return ResponseEntity.ok(task);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         }
-
-        return ResponseEntity.ok(task);
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks(Authentication authentication) {
-        String username = authentication.getName();
-        List<Task> tasks = taskService.getAllTasks().stream()
-                .filter(t -> t.getUser().getUsername().equals(username))
-                .collect(Collectors.toList());
+    public ResponseEntity<List<Task>> getAllTasks(Authentication auth) {
+        List<Task> tasks = taskService.getAllTasksByUsername(auth.getName());
         return ResponseEntity.ok(tasks);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable Long id, @RequestBody Task task, Authentication authentication) {
-        String username = authentication.getName();
-        Task existingTask = taskService.getTaskById(id);
-        if (!existingTask.getUser().getUsername().equals(username)) {
-            return ResponseEntity.status(403).build();
+    public ResponseEntity<Task> updateTask(@PathVariable Long id,
+                                           @RequestBody Task task,
+                                           Authentication auth) {
+        try {
+            Task updatedTask = taskService.updateTask(id, task, auth.getName());
+            return ResponseEntity.ok(updatedTask);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         }
-        Task updatedTask = taskService.updateTask(id, task);
-        return ResponseEntity.ok(updatedTask);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTask(@PathVariable Long id, Authentication authentication) {
-        String username = authentication.getName();
-        Task task = taskService.getTaskById(id);
-        if (!task.getUser().getUsername().equals(username)) {
-            return ResponseEntity.status(403).build();
+    public ResponseEntity<Void> deleteTask(@PathVariable Long id, Authentication auth) {
+        try {
+            taskService.deleteTask(id, auth.getName());
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.notFound().build();
         }
-        taskService.deleteTask(id);
-        return ResponseEntity.noContent().build();
     }
-}
+} // <-- make sure this closing brace is present
