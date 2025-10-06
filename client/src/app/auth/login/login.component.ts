@@ -3,10 +3,12 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router} from '@angular/router';
 import { AuthService } from '../services/auth.service';
 
+
 @Component({
   selector: 'app-login',
  standalone: false, 
   templateUrl: './login.html',
+  styleUrls: ['./login.scss']
 })
 export class LoginComponent {
   loginForm!: FormGroup;

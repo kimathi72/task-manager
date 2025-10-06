@@ -4,12 +4,8 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-dashboard',
   standalone: false,
-  template: `
-    <h2>Task Dashboard</h2>
-    <app-task-form (taskCreated)="onTaskCreated($event)"></app-task-form>
-    <app-task-list [refreshTrigger]="refreshTrigger"></app-task-list>
-     <button (click)="logout()" class="btn btn-danger">Logout</button>
-  `
+  templateUrl: `./dashboard.html`,
+  styleUrls: ['./dashboard.scss']
 })
 export class DashboardComponent {
   refreshTrigger = 0;

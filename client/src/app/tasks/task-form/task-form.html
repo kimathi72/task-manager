@@ -1,1 +1,7 @@
-<p>task-form works!</p>
+<div class="taskForm-container">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <input formControlName="title" placeholder="Task title" />
+      <input formControlName="description" placeholder="Description" />
+      <button type="submit" [disabled]="form.invalid">Add Task</button>
+    </form>
+    </div>

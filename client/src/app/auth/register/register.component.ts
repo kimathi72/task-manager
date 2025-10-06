@@ -7,6 +7,7 @@ import { AuthService } from '../services/auth.service';
   selector: 'app-register',
   standalone: false,
   templateUrl: './register.html',
+  styleUrls: ['./register.scss']
 })
 export class RegisterComponent {
   registerForm!: FormGroup

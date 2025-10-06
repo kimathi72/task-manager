@@ -6,13 +6,8 @@ import { Task } from '../../models/task.model';
 @Component({
   selector: 'app-task-form',
   standalone: false,
-  template: `
-    <form [formGroup]="form" (ngSubmit)="submit()">
-      <input formControlName="title" placeholder="Task title" />
-      <input formControlName="description" placeholder="Description" />
-      <button type="submit" [disabled]="form.invalid">Add Task</button>
-    </form>
-  `
+  templateUrl: `./task-form.html`,
+  styleUrls: ['./task-form.scss']
 })
 export class TaskFormComponent {
   form: FormGroup;

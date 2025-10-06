@@ -19,7 +19,7 @@ import { JwtInterceptor } from './core/interceptors/jwt-interceptor';
     RegisterComponent,
     DashboardComponent,
     TaskFormComponent,
-    TaskListComponent
+    TaskListComponent,
   ],
   imports: [
     BrowserModule,

@@ -5,31 +5,8 @@ import { Task } from '../../models/task.model';
 @Component({
   selector: 'app-task-list',
   standalone: false,
-  template: `
-    <h2>Your Tasks</h2>
-    <ul>
-      <li *ngFor="let task of tasks">
-        <!-- Edit Mode -->
-        <div *ngIf="editingTask && editingTask.id === task.id">
-          <input [(ngModel)]="editingTask.title" placeholder="Title" />
-          <input [(ngModel)]="editingTask.description" placeholder="Description" />
-          <select [(ngModel)]="editingTask.status">
-            <option value="PENDING">PENDING</option>
-            <option value="COMPLETED">COMPLETED</option>
-          </select>
-          <button (click)="saveTask()">Save</button>
-          <button (click)="cancelEdit()">Cancel</button>
-        </div>
-
-        <!-- View Mode -->
-        <div *ngIf="!editingTask || editingTask.id !== task.id">
-          <strong>{{ task.title }}</strong> - {{ task.description }} ({{ task.status }})
-          <button (click)="startEdit(task)">Edit</button>
-          <button (click)="deleteTask(task.id!)">Delete</button>
-        </div>
-      </li>
-    </ul>
-  `
+  templateUrl: `./task-list.html`,
+  styleUrls: ['./task-list.scss']
 })
 export class TaskListComponent implements OnInit, OnChanges {
   @Input() refreshTrigger!: number;

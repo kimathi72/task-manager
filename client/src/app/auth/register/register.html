@@ -1,7 +1,7 @@
 <div class="register-container">
   <h2>Register</h2>
   <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <div>
+    <div class="form-control">
       <label>Username</label>
       <input type="text" formControlName="username" />
       <div *ngIf="registerForm.get('username')?.invalid && registerForm.get('username')?.touched" class="error">
@@ -9,7 +9,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="form-control">
       <label>Password</label>
       <input type="password" formControlName="password" />
       <div *ngIf="registerForm.get('password')?.invalid && registerForm.get('password')?.touched" class="error">
@@ -17,7 +17,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="form-control">
       <label>Confirm Password</label>
       <input type="password" formControlName="confirmPassword" />
       <div *ngIf="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched" class="error">
