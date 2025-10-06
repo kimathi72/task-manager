@@ -26,7 +26,7 @@ The app allows users to create, update, and manage tasks efficiently through a c
 
 ---
 
-## 📁 Project Structure
+## 📂 Project Structure
 
 ```
 taskmanager/
@@ -48,16 +48,51 @@ taskmanager/
 
 ---
 
+## ⚡ Getting Started
+
+Follow these steps to set up and run the project locally.
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone git@github.com:kimathi72/task-manager.git
+cd task-manager
+```
+
+### 2️⃣ Prerequisites
+
+Ensure you have the following installed:
+
+* **Java 21+**
+* **Maven 3.6+**
+* **Node.js 20+**
+* **npm 10+**
+
+### 3️⃣ Install Dependencies
+
+Backend dependencies are managed by Maven, and frontend ones by npm.
+
+```bash
+cd client
+npm install
+cd ..
+```
+
+You’re now ready to build and run the full-stack application!
+
+---
+
 ## ▶️ Running the App
 
 The Angular frontend is bundled and served directly by the Spring Boot backend.
 Once built, you only need to run the backend — it will automatically serve the Angular app on **port 8080**.
 
-### 1️⃣ Build and Run the Application
+### Build and Run the Application
 
 From the project root:
 
 ```bash
+cd taskmanager-backend
 mvn clean compile
 mvn spring-boot:run
 ```
@@ -70,14 +105,14 @@ The backend will:
 
 ---
 
-### 2️⃣ Access the Application
+### Access the Application
 
 * Web App: [http://localhost:8080](http://localhost:8080)
 * H2 Console: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
 
 ---
 
-### 3️⃣ Frontend Development Workflow
+### Frontend Development Workflow
 
 If you need to modify the Angular app for development:
 
