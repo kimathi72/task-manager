@@ -1,7 +1,19 @@
 # 📌 Task Manager (Spring Boot + Angular)
 
-A **full-stack Task Manager MVP** that demonstrates modern web application development using **Spring Boot** for the backend and **Angular** for the frontend.
-The app allows users to manage tasks efficiently through a clean interface backed by secure REST APIs.
+A **full-stack Task Manager MVP** demonstrating modern web application development using **Spring Boot** for the backend and **Angular** for the frontend.
+The app allows users to create, update, and manage tasks efficiently through a clean and responsive interface backed by secure REST APIs.
+
+---
+
+## ✨ Features
+
+* 📝 **Task Management (CRUD)** — Create, read, update, and delete tasks
+* 🔐 **User Authentication** — Basic login secured with Spring Security (JWT-ready)
+* 🧭 **Responsive Dashboard** — Angular-based UI for seamless task navigation and updates
+* ⚙️ **RESTful API Integration** — Backend and frontend communication via REST endpoints
+* 💾 **In-Memory Database** — H2 database for easy setup and testing
+* 🧱 **Modular Architecture** — Clean separation of backend and frontend for scalability
+* 🚀 **Single Deployment** — Angular app bundled and served directly by Spring Boot on port **8080**
 
 ---
 
