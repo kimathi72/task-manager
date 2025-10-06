@@ -44,3 +44,5 @@ client/.env
 *.jar
 *.war
 *.ear
+/client/node/node_modules/
+/client/node/node
