@@ -1,156 +1,125 @@
 # 📌 Task Manager (Spring Boot + Angular)
 
-A **full-stack Task Manager MVP** built with:
-
-- **Backend**: Spring Boot 3 (Java 21, Maven, Spring Security, JPA, H2, JWT)  
-- **Frontend**: Angular 18 (TypeScript, SCSS, Routing)  
-- **Database**: H2 (in-memory)  
-- **Build Tools**: Maven + Node.js/npm  
+A **full-stack Task Manager MVP** that demonstrates modern web application development using **Spring Boot** for the backend and **Angular** for the frontend.
+The app allows users to manage tasks efficiently through a clean interface backed by secure REST APIs.
 
 ---
 
-## 📂 Project Structure
+## 🧩 Tech Stack
+
+* **Backend:** Spring Boot 3 (Java 21, Maven, Spring Security, JPA, H2, JWT)
+* **Frontend:** Angular 18 (TypeScript, SCSS, Routing)
+* **Database:** H2 (in-memory)
+* **Build Tools:** Maven + Node.js/npm
+
+---
+
+## 📁 Project Structure
+
+```
 taskmanager/
-│── taskmanager-backend/ # Spring Boot backend
-│ ├── src/ # Java source code
-│ ├── pom.xml # Maven dependencies
-│ └── target/ # Compiled backend (ignored by git)
 │
-│── client/ # Angular frontend
-│ ├── src/ # Angular source code
-│ ├── angular.json # Angular config
-│ └── dist/ # Build output (ignored by git)
+├── taskmanager-backend/     # Spring Boot backend
+│   ├── src/                 # Java source code
+│   ├── pom.xml              # Maven dependencies
+│   └── target/              # Compiled backend (ignored by git)
+│
+├── client/                  # Angular frontend
+│   ├── src/                 # Angular source code
+│   ├── angular.json         # Angular config
+│   └── dist/                # Build output (ignored by git)
 │
 ├── .gitignore
 ├── .gitattributes
 └── README.md
-
-yaml
-Copy code
+```
 
 ---
 
 ## ▶️ Running the App
 
-### 1️⃣ Start Backend (Spring Boot)
+The Angular frontend is bundled and served directly by the Spring Boot backend.
+Once built, you only need to run the backend — it will automatically serve the Angular app on **port 8080**.
+
+### 1️⃣ Build and Run the Application
+
+From the project root:
+
 ```bash
-cd taskmanager-backend
-./mvnw spring-boot:run
-Backend runs on: 👉 http://localhost:8080
+mvn clean compile
+mvn spring-boot:run
+```
 
-H2 Console: 👉 http://localhost:8080/h2-console
+The backend will:
 
-2️⃣ Start Frontend (Angular)
-bash
-Copy code
+* Launch the Spring Boot API at **[http://localhost:8080](http://localhost:8080)**
+* Serve the Angular frontend from the same port
+* Expose the H2 in-memory database console at **[http://localhost:8080/h2-console](http://localhost:8080/h2-console)**
+
+---
+
+### 2️⃣ Access the Application
+
+* Web App: [http://localhost:8080](http://localhost:8080)
+* H2 Console: [http://localhost:8080/h2-console](http://localhost:8080/h2-console)
+
+---
+
+### 3️⃣ Frontend Development Workflow
+
+If you need to modify the Angular app for development:
+
+```bash
 cd client
 npm install
 ng serve
-Frontend runs on: 👉 http://localhost:4200
+```
 
-🔄 Proxy Setup (Avoid CORS in Dev)
-To forward Angular API requests to Spring Boot:
+Once satisfied with your changes, rebuild the production bundle and redeploy it with Spring Boot:
 
-Create client/proxy.conf.json:
+```bash
+ng build --configuration production
+```
 
-json
-Copy code
-{
-  "/api": {
-    "target": "http://localhost:8080",
-    "secure": false,
-    "changeOrigin": true
-  }
-}
-Update package.json scripts:
-
-json
-Copy code
-"scripts": {
-  "start": "ng serve --proxy-config proxy.conf.json"
-}
-Now run:
-
-bash
-Copy code
-npm start
-Requests to /api/... go to Spring Boot automatically.
-
-🔑 Authentication
-Spring Security is enabled by default.
-
-Visiting http://localhost:8080 shows a login page.
-
-You’ll configure JWT + custom users later for real authentication.
-
-For now, backend auto-generates a default login:
-
-Username: user
-
-Password: (shown in backend logs on startup)
-
-🛠️ Development Commands
-Backend
-Run app: ./mvnw spring-boot:run
-
-Run tests: ./mvnw test
-
-Package JAR: ./mvnw clean package
-
-Frontend
-Start dev server: ng serve
-
-Build for production: ng build
-
-Run unit tests: ng test
-
-🌱 Initial Git Setup
-.gitignore
-gitignore
-Copy code
-# Maven
-target/
-*.log
-
-# Node
-node_modules/
-dist/
-.cache/
-
-# IDEs
-.idea/
-.vscode/
-*.iml
-
-# OS files
-.DS_Store
-Thumbs.db
-.gitattributes
-gitattributes
-Copy code
-# Normalize line endings
-* text=auto
-
-# Java source
-*.java text diff=java
-
-# TypeScript/HTML/SCSS
-*.ts text
-*.html text
-*.scss text
-🚀 Next Steps
-✅ Implement JWT Authentication (Spring Security + Angular Interceptor)
-
-✅ Add Task CRUD (backend REST + Angular services + components)
-
-✅ Connect Angular Auth Guard → backend JWT
-
-🚀 Deploy fullstack app (Heroku / Render / Railway / Docker)
-
-👨‍💻 Author
-Built with ❤️ by Roy Kimathi
-
-pgsql
-Copy code
+This will place the compiled files into the backend’s `resources/static` directory so they’re served automatically when Spring Boot runs.
 
 ---
+
+## 🔑 Authentication
+
+Spring Security is enabled by default.
+By default, the backend generates credentials on startup:
+
+```
+Username: user
+Password: (shown in backend logs)
+```
+
+JWT authentication and custom user management can be added later for production environments.
+
+---
+
+## 🧰 Useful Commands
+
+**Backend**
+
+```bash
+mvn spring-boot:run     # Start app
+mvn test                # Run tests
+mvn clean package       # Build JAR
+```
+
+**Frontend (for dev)**
+
+```bash
+ng serve                # Start Angular dev server
+ng build                # Build for production
+ng test                 # Run Angular tests
+```
+
+---
+
+## 👨‍💻 Author
+
+Built with ❤️ by **Roy Kimathi**
+For the **Full-Stack Developer Technical Assessment – Veri Group**
